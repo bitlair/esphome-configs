@@ -1,0 +1,4 @@
+substitutions:
+  name: hoofdruimte
+
+<<: !include shabadge.yaml

@@ -1,0 +1,4 @@
+substitutions:
+  name: lounge
+
+<<: !include shabadge.yaml

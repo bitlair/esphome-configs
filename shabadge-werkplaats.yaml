@@ -1,0 +1,4 @@
+substitutions:
+  name: werkplaats
+
+<<: !include shabadge.yaml

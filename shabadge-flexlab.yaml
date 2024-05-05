@@ -1,0 +1,4 @@
+substitutions:
+  name: flexlab
+
+<<: !include shabadge.yaml

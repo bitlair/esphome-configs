@@ -1,0 +1,193 @@
+esphome:
+  name: shabadge-${name}
+
+esp32:
+  board: esp32thing
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  safe_mode: true
+  password: !secret ota_password
+
+logger:
+
+mqtt:
+  broker: mqtt.local
+  discovery: false
+
+external_components:
+  - source:
+      type: local
+      path: local_components
+    components: [ mpr121_gpio ]
+  - source:
+      type: git
+      url: https://github.com/esphome/esphome
+      ref: dev
+    components: [ waveshare_epaper ]
+
+
+spi:
+  clk_pin: 18
+  mosi_pin: 5
+
+i2c:
+  sda: 26
+  scl: 27
+  scan: true
+
+uart:
+    id: uart_mhz19
+    rx_pin: 17
+    tx_pin: 16
+    baud_rate: 9600
+
+mpr121_gpio:
+  id: mpr121_component
+  address: 0x5A
+  touch_debounce: 1
+  release_debounce: 1
+  touch_threshold: 10
+  release_threshold: 7
+
+
+binary_sensor:
+  - platform: mpr121_gpio
+    id: touch_A
+    channel: 0
+    name: "Touch A"
+    disabled_by_default: true
+  - platform: mpr121_gpio
+    id: touch_B
+    channel: 1
+    name: "Touch B"
+    disabled_by_default: true
+  - platform: mpr121_gpio
+    id: touch_START
+    channel: 2
+    name: "Touch Start"
+    disabled_by_default: true
+  - platform: mpr121_gpio
+    id: touch_SEL
+    channel: 3
+    name: "Touch Select"
+    disabled_by_default: true
+  - platform: mpr121_gpio
+    id: touch_DOWN
+    channel: 4
+    name: "Touch Down"
+    disabled_by_default: true
+  - platform: mpr121_gpio
+    id: touch_RIGHT
+    channel: 5
+    name: "Touch Right"
+    disabled_by_default: true
+  - platform: mpr121_gpio
+    id: touch_UP
+    channel: 6
+    name: "Touch Up"
+    disabled_by_default: true
+  - platform: mpr121_gpio
+    id: touch_LEFT
+    channel: 7
+    name: "Touch Left"
+    disabled_by_default: true
+  - platform: gpio
+    name: "Flash Button"
+    disabled_by_default: true
+    pin: 0
+    filters:
+      - invert:
+
+output:
+  - id: led_and_mhz19_power
+    platform: gpio
+    pin:
+      mpr121_gpio: mpr121_component
+      number: 6
+      mode: OUTPUT
+      inverted: true
+
+sensor:
+  - platform: mhz19
+    uart_id: uart_mhz19
+    co2:
+      name: "MH-Z19 CO2 Value"
+      id: co2
+      state_topic: bitlair/climate/${name}/co2_ppm
+      retain: false
+    update_interval: 10s
+    automatic_baseline_calibration: false
+  - platform: bme280_i2c
+    temperature:
+      name: "BME280 Temperature"
+      id: temperature
+      oversampling: 16x
+      state_topic: bitlair/climate/${name}/temperature_c
+      retain: false
+    pressure:
+      name: "BME280 Pressure"
+      id: pressure
+      state_topic: bitlair/climate/${name}/pressure_hpa
+      retain: false
+    humidity:
+      name: "BME280 Humidity"
+      id: humidity
+      state_topic: bitlair/climate/${name}/humidity_pct
+      retain: false
+    address: 0x76
+    update_interval: 10s
+
+graph:
+  - id: co2_graph
+    duration: 6h
+    width: 290
+    height: 63
+    x_grid: 30min
+    y_grid: 100     # ppm
+    min_value: 0    # Start of Y-axis range
+    max_range: 2000 # Specifies the max Y-axis range.
+    traces:
+      - sensor: co2
+        line_type: SOLID
+        line_thickness: 2
+
+font:
+  - file: "gfonts://Roboto"
+    id: font_big
+    size: 32
+  - file: "gfonts://Roboto"
+    id: font_small
+    size: 18
+
+display:
+  - platform: waveshare_epaper
+    model: 2.90in-dke
+    cs_pin: 19
+    dc_pin: 21
+    busy_pin: 22
+    reset_pin: 23
+    update_interval: 20s
+    lambda: |-
+      it.printf(0, 34, id(font_small), "${name}");
+      it.printf(0, 0, id(font_big), "%.0f ppm", id(co2).state);
+      it.graph(4, 64, id(co2_graph));
+      it.printf(160, 10, id(font_small), "%.1f °C", id(temperature).state);
+      it.printf(160, 34, id(font_small), "%.0f %%", id(humidity).state);
+      it.printf(220, 34, id(font_small), "%.0f hPa", id(pressure).state);
+    rotation: 270
+
+light:
+  - platform: esp32_rmt_led_strip
+    rgb_order: GRB
+    is_rgbw: true
+    pin: 32
+    num_leds: 6
+    rmt_channel: 0
+    chipset: sk6812
+    id: ledstrip
