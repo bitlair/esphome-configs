@@ -113,7 +113,19 @@ output:
       mode: OUTPUT
       inverted: true
 
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+    state_topic: bitlair/esphome/shabadge-${name}/version
+
 sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    update_interval: 10s
+    state_topic: bitlair/esphome/shabadge-${name}/wifi_signal
+    retain: false
+
   - platform: mhz19
     uart_id: uart_mhz19
     co2:
