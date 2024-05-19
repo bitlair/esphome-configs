@@ -1,0 +1,52 @@
+esphome:
+  name: airrohr
+
+esp32:
+  board: esp32thing
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  safe_mode: true
+  password: !secret ota_password
+
+logger:
+
+mqtt:
+  broker: mqtt.local
+  discovery: false
+
+uart:
+    id: uart_sds011
+    rx_pin: 22
+    tx_pin: 21
+    baud_rate: 9600
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+    state_topic: bitlair/esphome/airrohr/version
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    update_interval: 10s
+    state_topic: bitlair/esphome/airrohr/wifi_signal
+    retain: false
+
+  - platform: sds011
+    uart_id: uart_sds011
+    pm_2_5:
+      name: "Particulate Matter <2.5µm Concentration"
+      state_topic: bitlair/climate/airrohr/dust_mass/pm2.5
+      retain: false
+    pm_10_0:
+      name: "Particulate Matter <10.0µm Concentration"
+      state_topic: bitlair/climate/airrohr/dust_mass/pm10.0
+      retain: false
+    update_interval: 5min
