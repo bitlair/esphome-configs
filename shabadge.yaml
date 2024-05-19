@@ -22,10 +22,10 @@ mqtt:
 
 external_components:
   - source:
-      type: local
-      path: local_components
-    components: [ mpr121_gpio ]
-
+      type: git
+      url: https://github.com/polyfloyd/esphome
+      ref: mpr-121-gpio
+    components: [ mpr121 ]
 
 spi:
   clk_pin: 18
@@ -42,7 +42,7 @@ uart:
     tx_pin: 16
     baud_rate: 9600
 
-mpr121_gpio:
+mpr121:
   id: mpr121_component
   address: 0x5A
   touch_debounce: 1
@@ -52,42 +52,42 @@ mpr121_gpio:
 
 
 binary_sensor:
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_A
     channel: 0
     name: "Touch A"
     disabled_by_default: true
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_B
     channel: 1
     name: "Touch B"
     disabled_by_default: true
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_START
     channel: 2
     name: "Touch Start"
     disabled_by_default: true
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_SEL
     channel: 3
     name: "Touch Select"
     disabled_by_default: true
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_DOWN
     channel: 4
     name: "Touch Down"
     disabled_by_default: true
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_RIGHT
     channel: 5
     name: "Touch Right"
     disabled_by_default: true
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_UP
     channel: 6
     name: "Touch Up"
     disabled_by_default: true
-  - platform: mpr121_gpio
+  - platform: mpr121
     id: touch_LEFT
     channel: 7
     name: "Touch Left"
@@ -103,8 +103,8 @@ output:
   - id: led_and_mhz19_power
     platform: gpio
     pin:
-      mpr121_gpio: mpr121_component
-      number: 6
+      mpr121_id: mpr121_component
+      number: 10
       mode: OUTPUT
       inverted: true
 
