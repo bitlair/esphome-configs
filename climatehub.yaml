@@ -12,14 +12,15 @@ wifi:
   reboot_timeout: 3min
 
 ota:
-  safe_mode: true
+  platform: esphome
   password: !secret ota_password
 
 mqtt:
   broker: !secret mqtt_server
 
-dallas:
-  - pin: 2
+one_wire:
+  - platform: gpio
+    pin: 2
 
 text_sensor:
   - platform: version
@@ -34,12 +35,12 @@ sensor:
     state_topic: esphome/climatehub/wifi_signal
     retain: false
 
-  - platform: dallas
+  - platform: dallas_temp
     name: "DS18B20 Plafond"
     address: 0x89051660b683ff28
     state_topic: sensors/climatehub-plafond/temperature
     retain: false
-  - platform: dallas
+  - platform: dallas_temp
     name: "DS18B20 Vloer"
     address: 0xf5041664269fff28
     state_topic: sensors/climatehub-vloer/temperature
