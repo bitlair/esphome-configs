@@ -16,7 +16,7 @@ ota:
   password: !secret ota_password
 
 mqtt:
-  broker: mqtt.local
+  broker: !secret mqtt_server
 
 dallas:
   - pin: 2

@@ -17,7 +17,7 @@ ota:
 logger:
 
 mqtt:
-  broker: mqtt.bitlair.nl
+  broker: !secret mqtt_server
   discovery: false
 
 text_sensor:

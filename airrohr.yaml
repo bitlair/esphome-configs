@@ -17,7 +17,7 @@ ota:
 logger:
 
 mqtt:
-  broker: mqtt.local
+  broker: !secret mqtt_server
   discovery: false
 
 uart:
