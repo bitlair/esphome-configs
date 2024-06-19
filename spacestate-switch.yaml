@@ -1,0 +1,89 @@
+esphome:
+  name: spacestate-switch
+
+esp32:
+  board: esp32thing
+  framework:
+    type: arduino
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+ota:
+  safe_mode: true
+  password: !secret ota_password
+
+logger:
+
+mqtt:
+  broker: mqtt.bitlair.nl
+  discovery: false
+
+text_sensor:
+  - platform: version
+    name: "ESPHome Version"
+    hide_timestamp: true
+    state_topic: bitlair/esphome/spacestate-switch/version
+
+sensor:
+  - platform: wifi_signal
+    name: "WiFi Signal dB"
+    update_interval: 10s
+    state_topic: bitlair/esphome/spacestate-switch/wifi_signal
+    retain: false
+
+binary_sensor:
+  - platform: gpio
+    name: "Bitlair State"
+    id: switch_bitlair
+    state_topic: bitlair/switch/state/bitlair
+    pin:
+      number: 5
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      then:
+        - light.turn_on: led_bitlair
+    on_release:
+      then:
+        - light.turn_off: led_bitlair
+    on_state:
+      then:
+        - logger.log: Bitlair
+
+  - platform: gpio
+    name: "DJO State"
+    id: switch_djo
+    state_topic: bitlair/switch/state/djo
+    pin:
+      number: 23
+      mode: INPUT_PULLUP
+      inverted: true
+    on_press:
+      then:
+        - light.turn_on: led_djo
+    on_release:
+      then:
+        - light.turn_off: led_djo
+    on_state:
+      then:
+        - logger.log: DJO
+
+output:
+  - platform: gpio
+    pin: 19
+    id: o_led_bitlair
+  - platform: gpio
+    pin: 18
+    id: o_led_djo
+
+light:
+  - platform: binary
+    id: led_bitlair
+    name: "Bitlair Led"
+    output: o_led_bitlair
+  - platform: binary
+    id: led_djo
+    name: "DJO Led"
+    output: o_led_djo
