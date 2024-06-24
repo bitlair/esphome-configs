@@ -48,9 +48,6 @@ binary_sensor:
     on_release:
       then:
         - light.turn_off: led_bitlair
-    on_state:
-      then:
-        - logger.log: Bitlair
 
   - platform: gpio
     name: "DJO State"
@@ -66,9 +63,6 @@ binary_sensor:
     on_release:
       then:
         - light.turn_off: led_djo
-    on_state:
-      then:
-        - logger.log: DJO
 
 output:
   - platform: gpio
