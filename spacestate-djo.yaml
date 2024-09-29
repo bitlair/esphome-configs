@@ -18,7 +18,6 @@ logger:
 
 mqtt:
   broker: !secret mqtt_server
-  discovery: false
 
 text_sensor:
   - platform: version
